@@ -10,9 +10,7 @@ module ActiveRecord::Turntable
 
     attr_accessor :algorithm, :shard_registry, :sequencer_registry
 
-    def initialize
-      @slave_enabled = Concurrent::ThreadLocalVar.new(false)
-    end
+    def initialize; end
 
     def self.build(sequencer_registry)
       self.new.tap do |instance|
@@ -69,14 +67,6 @@ module ActiveRecord::Turntable
         raise ActiveRecord::Turntable::TurntableError,
               "transaction cannot call to object: #{shard_or_object}"
       end
-    end
-
-    def slave_enabled?
-      @slave_enabled.value
-    end
-
-    def set_slave_enabled(enabled)
-      @slave_enabled.value = enabled
     end
 
     def sequencers

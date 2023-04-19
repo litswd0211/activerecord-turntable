@@ -13,7 +13,7 @@ module ActiveRecord::Turntable
     end
 
     def add(setting)
-      shard = (@shards_names_hash[setting.name] ||= Shard.new(cluster, setting.name, setting.slaves))
+      shard = (@shards_names_hash[setting.name] ||= Shard.new(cluster, setting.name))
       @shard_maps << ShardMap.new(setting.range, shard)
       @shard_maps.sort_by! { |m| m.range.min }
     end

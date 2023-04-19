@@ -16,10 +16,6 @@ module ActiveRecord::Turntable
       end
     end
 
-    def support_slave?
-      false
-    end
-
     private
 
       def original_connection_pool(klass = @klass)
