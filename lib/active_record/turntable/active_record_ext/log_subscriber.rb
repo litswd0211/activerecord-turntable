@@ -19,22 +19,14 @@ module ActiveRecord::Turntable
         binds = nil
 
         unless (payload[:binds] || []).empty?
-          if Util.ar_version_equals_or_later?("5.0.3")
-            casted_params = if Util.ar_version_satisfy?(">= 5.1.5") || Util.ar_version_satisfy?([">= 5.0.7", "< 5.1"])
-                              type_casted_binds(payload[:type_casted_binds])
-                            else
-                              type_casted_binds(payload[:binds], payload[:type_casted_binds])
-                            end
-            binds = "  " + payload[:binds].zip(casted_params).map { |attr, value|
-              render_bind(attr, value)
-            }.inspect
-          else
-            binds = "  " + payload[:binds].map { |attr| render_bind(attr) }.inspect
-          end
+          casted_params = type_casted_binds(payload[:type_casted_binds])
+          binds = "  " + payload[:binds].zip(casted_params).map { |attr, value|
+            render_bind(attr, value)
+          }.inspect
         end
 
         name = colorize_payload_name(name, payload[:name])
-        sql  = color(sql, sql_color(sql), true) if Util.ar60_or_later? && colorize_logging
+        sql  = color(sql, sql_color(sql), true) if colorize_logging
 
         debug "  #{name}  #{sql}#{binds}"
       end

@@ -8,7 +8,6 @@ require "active_record"
 require "active_record/fixtures"
 require "active_support/concern"
 require "active_record/turntable/error"
-require "active_record/turntable/util"
 require "logger"
 require "singleton"
 

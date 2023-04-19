@@ -12,17 +12,13 @@ module ActiveRecord::Turntable
           self.id = klass.next_sequence_value
         end
         self.class.connection.shards_transaction([self.turntable_shard]) do
-          if Util.ar60_or_later?
-            if has_transactional_callbacks?
-              add_to_transaction
-            else
-              sync_with_transaction_state if @transaction_state&.finalized?
-              @transaction_state = self.turntable_shard.connection.transaction_state
-            end
-            remember_transaction_record_state
-          else
+          if has_transactional_callbacks?
             add_to_transaction
+          else
+            sync_with_transaction_state if @transaction_state&.finalized?
+            @transaction_state = self.turntable_shard.connection.transaction_state
           end
+          remember_transaction_record_state
 
           begin
             status = yield
@@ -34,26 +30,12 @@ module ActiveRecord::Turntable
           raise ActiveRecord::Rollback unless status
         end
         status
-      ensure
-        if !Util.ar60_or_later? && @transaction_state && @transaction_state.committed?
-          clear_transaction_record_state
-        end
       end
 
       def add_to_transaction
         return super unless self.class.turntable_enabled?
 
-        if Util.ar60_or_later?
-          self.turntable_shard.connection.add_transaction_record(self)
-        else
-          if has_transactional_callbacks?
-            self.turntable_shard.connection.add_transaction_record(self)
-          else
-            sync_with_transaction_state
-            set_transaction_state(self.turntable_shard.connection.transaction_state)
-          end
-          remember_transaction_record_state
-        end
+        self.turntable_shard.connection.add_transaction_record(self)
       end
     end
   end

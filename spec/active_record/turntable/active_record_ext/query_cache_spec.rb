@@ -6,46 +6,28 @@ describe ActiveRecord::Turntable::ActiveRecordExt::QueryCache do
     executor = Class.new(ActiveSupport::Executor)
     ActiveRecord::QueryCache.install_executor_hooks executor
     lambda do |env|
-      if ActiveRecord::Turntable::Util.ar60_or_later?
-        original_handlers = ActiveRecord::Base.connection_handlers
-        ActiveRecord::Base.connection_handlers = { writing: ActiveRecord::Base.default_connection_handler, reading: ActiveRecord::ConnectionAdapters::ConnectionHandler.new }
-      end
+      original_handlers = ActiveRecord::Base.connection_handlers
+      ActiveRecord::Base.connection_handlers = { writing: ActiveRecord::Base.default_connection_handler, reading: ActiveRecord::ConnectionAdapters::ConnectionHandler.new }
       executor.wrap do
         app.call(env)
       end
     ensure
-      if ActiveRecord::Turntable::Util.ar60_or_later?
-        ActiveRecord::Base.connection_handlers = original_handlers
-      end
+      ActiveRecord::Base.connection_handlers = original_handlers
     end
   end
 
   def disable_query_cache
-    if ActiveRecord::Turntable::Util.ar_version_equals_or_later?("5.0.1")
-      ActiveRecord::Base.connection_pool.disable_query_cache!
-      ActiveRecord::Base.turntable_pool_list.each do |pool|
-        pool.disable_query_cache!
-      end
-    else
-      ActiveRecord::Base.connection.disable_query_cache!
-      ActiveRecord::Base.turntable_pool_list.each do |pool|
-        pool.connection.disable_query_cache!
-      end
+    ActiveRecord::Base.connection_pool.disable_query_cache!
+    ActiveRecord::Base.turntable_pool_list.each do |pool|
+      pool.disable_query_cache!
     end
   end
 
   def enable_query_cache
-    if ActiveRecord::Turntable::Util.ar_version_equals_or_later?("5.0.1")
-      ActiveRecord::Base.connection_pool.enable_query_cache!
+    ActiveRecord::Base.connection_pool.enable_query_cache!
       ActiveRecord::Base.turntable_pool_list.each do |pool|
         pool.enable_query_cache!
       end
-    else
-      ActiveRecord::Base.connection.enable_query_cache!
-      ActiveRecord::Base.turntable_pool_list.each do |pool|
-        pool.connection.enable_query_cache!
-      end
-    end
   end
 
   after do

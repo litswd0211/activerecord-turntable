@@ -1,4 +1,5 @@
 module ActiveRecord::Turntable
+  # TODO: remove this module
   module Compatibility
     def self.extended(base)
       base.instance_variable_set(:@_compatible_versions, [])

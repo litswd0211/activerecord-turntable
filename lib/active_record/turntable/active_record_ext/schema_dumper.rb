@@ -13,9 +13,7 @@ module ActiveRecord::Turntable
           end
 
           begin
-            if Util.ar60_or_later?
-              self.table_name = table
-            end
+            self.table_name = table
 
             tbl = StringIO.new
 
@@ -31,7 +29,7 @@ module ActiveRecord::Turntable
               end
             end
 
-            if Util.ar_version_earlier_than?("5.0.1") && comment = @connection.table_comment(table).presence
+            if comment = @connection.table_comment(table).presence
               tbl.print ", comment: #{comment.inspect}"
             end
             tbl.puts
@@ -43,9 +41,7 @@ module ActiveRecord::Turntable
             stream.puts "#   #{e.message}"
             stream.puts
           ensure
-            if Util.ar60_or_later?
-              self.table_name = nil
-            end
+            self.table_name = nil
           end
 
           stream

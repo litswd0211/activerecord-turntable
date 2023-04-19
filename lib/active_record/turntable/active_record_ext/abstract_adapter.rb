@@ -15,12 +15,7 @@ module ActiveRecord::Turntable
           message = "#{e.class.name}: #{e.message.force_encoding sql.encoding}: #{sql} : #{turntable_shard_name}"
         end
 
-        exception =
-          if Util.ar60_or_later?
-            translate_exception(e, message: message, sql: sql, binds: binds)
-          else
-            translate_exception(e, message)
-          end
+        exception = translate_exception(e, message: message, sql: sql, binds: binds)
         exception.set_backtrace e.backtrace
         exception
       end
@@ -47,79 +42,6 @@ module ActiveRecord::Turntable
               raise translate_exception_class(e, sql, binds)
             end
           end
-        end
-      end
-
-      module V5_2
-        def log(sql, name = "SQL", binds = [], type_casted_binds = [], statement_name = nil)
-          @instrumenter.instrument(
-            "sql.active_record",
-            sql:                  sql,
-            name:                 name,
-            binds:                binds,
-            type_casted_binds:    type_casted_binds,
-            statement_name:       statement_name,
-            connection_id:        object_id,
-            turntable_shard_name: turntable_shard_name) do
-            begin
-              @lock.synchronize do
-                yield
-              end
-            rescue => e
-              raise translate_exception_class(e, sql, binds)
-            end
-          end
-        end
-      end
-
-      module V5_1
-        def log(sql, name = "SQL", binds = [], type_casted_binds = [], statement_name = nil)
-          @instrumenter.instrument(
-            "sql.active_record",
-            sql:                  sql,
-            name:                 name,
-            binds:                binds,
-            type_casted_binds:    type_casted_binds,
-            statement_name:       statement_name,
-            connection_id:        object_id,
-            turntable_shard_name: turntable_shard_name) do
-              @lock.synchronize do
-                yield
-              end
-            end
-        rescue => e
-          raise translate_exception_class(e, sql, binds)
-        end
-      end
-
-      module V5_0_3
-        def log(sql, name = "SQL", binds = [], type_casted_binds = [], statement_name = nil) # :doc:
-          @instrumenter.instrument(
-            "sql.active_record",
-            sql:                  sql,
-            name:                 name,
-            binds:                binds,
-            type_casted_binds:    type_casted_binds,
-            statement_name:       statement_name,
-            connection_id:        object_id,
-            turntable_shard_name: turntable_shard_name) { yield }
-        rescue => e
-          raise translate_exception_class(e, sql, binds)
-        end
-      end
-
-      module V5_0
-        def log(sql, name = "SQL", binds = [], statement_name = nil)
-          @instrumenter.instrument(
-            "sql.active_record",
-            :sql                  => sql,
-            :name                 => name,
-            :connection_id        => object_id,
-            :statement_name       => statement_name,
-            :binds                => binds,
-            :turntable_shard_name => turntable_shard_name) { yield }
-        rescue => e
-          raise translate_exception_class(e, sql, binds)
         end
       end
       # rubocop:enable Style/HashSyntax, Style/MultilineMethodCallBraceLayout

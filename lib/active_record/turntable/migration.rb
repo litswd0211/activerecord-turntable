@@ -7,11 +7,7 @@ module ActiveRecord::Turntable::Migration
     class_attribute :target_shards, :current_shard
     ::ActiveRecord::ConnectionAdapters::AbstractAdapter.include(SchemaStatementsExt)
     ::ActiveRecord::Migration::CommandRecorder.include(CommandRecorder)
-    if ActiveRecord::Turntable::Util.ar52_or_later?
-      ::ActiveRecord::MigrationContext.prepend(MigrationContext)
-    else
-      ::ActiveRecord::Migrator.prepend(Migrator)
-    end
+    ::ActiveRecord::MigrationContext.prepend(MigrationContext)
   end
 
   module ShardDefinition
@@ -127,48 +123,6 @@ module ActiveRecord::Turntable::Migration
       end
 
       result
-    end
-  end
-
-  module Migrator
-    extend ActiveSupport::Concern
-
-    def self.prepended(base)
-      class << base
-        prepend ClassMethods
-      end
-    end
-
-    module ClassMethods
-      def up(migrations_paths, target_version = nil)
-        result = super
-
-        ActiveRecord::Tasks::DatabaseTasks.each_current_turntable_cluster_connected(current_environment) do |name, configuration|
-          puts "[turntable] *** Migrating database: #{configuration['database']}(Shard: #{name})"
-          super(migrations_paths, target_version)
-        end
-        result
-      end
-
-      def down(migrations_paths, target_version = nil, &block)
-        result = super
-
-        ActiveRecord::Tasks::DatabaseTasks.each_current_turntable_cluster_connected(current_environment) do |name, configuration|
-          puts "[turntable] *** Migrating database: #{configuration['database']}(Shard: #{name})"
-          super(migrations_paths, target_version, &block)
-        end
-        result
-      end
-
-      def run(*args)
-        result = super
-
-        ActiveRecord::Tasks::DatabaseTasks.each_current_turntable_cluster_connected(current_environment) do |name, configuration|
-          puts "[turntable] *** Migrating database: #{configuration['database']}(Shard: #{name})"
-          super(*args)
-        end
-        result
-      end
     end
   end
 end
