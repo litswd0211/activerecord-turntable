@@ -44,7 +44,7 @@ module ActiveRecord::Turntable
         self.turntable_enabled = true
         self.turntable_cluster_name = cluster_name
         self.turntable_shard_key = shard_key_name
-        turntable_replace_connection_pool
+        # turntable_replace_connection_pool
       end
 
       def turntable_cluster

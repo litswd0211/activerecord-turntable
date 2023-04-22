@@ -4,6 +4,8 @@ module ActiveRecord::Turntable
   module ActiveRecordExt
     module AssociationPreloader
       include ShardingCondition
+
+      # TODO: In Rails 7.1, you can use query_constrains.
       def build_scope
         returning_scope = super
         if should_use_shard_key?
