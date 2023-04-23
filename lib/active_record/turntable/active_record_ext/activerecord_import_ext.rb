@@ -48,7 +48,7 @@ module ActiveRecord::Turntable
     begin
       require "activerecord-import"
       require "activerecord-import/base"
-      r# equire "activerecord-import/active_record/adapters/mysql2_adapter"
+      # require "activerecord-import/active_record/adapters/mysql2_adapter"
       # ActiveRecord::Turntable::ConnectionProxy.include(ActiveRecord::Import::Mysql2Adapter)
       (class << ActiveRecord::Base; self; end).prepend(ActiverecordImportExt)
     rescue LoadError # rubocop:disable Lint/HandleExceptions

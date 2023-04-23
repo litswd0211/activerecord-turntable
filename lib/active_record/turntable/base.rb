@@ -47,22 +47,22 @@ module ActiveRecord::Turntable
         # turntable_replace_connection_pool
       end
 
-      def turntable_cluster
-        turntable_clusters[turntable_cluster_name]
-      end
+      #def turntable_cluster
+      #  turntable_clusters[turntable_cluster_name]
+      #end
 
-      def turntable_pool_list
-        turntable_clusters.values.map { |cluster| cluster.shards.map(&:connection_pool) }.flatten.uniq
-      end
+      #def turntable_pool_list
+      #  turntable_clusters.values.map { |cluster| cluster.shards.map(&:connection_pool) }.flatten.uniq
+      #end
 
-      def turntable_replace_connection_pool
-        ch = connection_handler
-        cp = ConnectionProxy.new(self, turntable_cluster)
-        pp = PoolProxy.new(cp)
+      #def turntable_replace_connection_pool
+      #  ch = connection_handler
+      #  cp = ConnectionProxy.new(self, turntable_cluster)
+      #  pp = PoolProxy.new(cp)
 
-        self.connection_specification_name = "turntable_pool_proxy::#{name}"
-        ch.owner_to_turntable_pool[connection_specification_name] = pp
-      end
+      #  self.connection_specification_name = "turntable_pool_proxy::#{name}" # connection_specification_nameがいいかも
+      #  ch.owner_to_turntable_pool[connection_specification_name] = pp
+      #end
 
       def sequencer(sequencer_name, *args)
         class_attribute :turntable_sequencer_name

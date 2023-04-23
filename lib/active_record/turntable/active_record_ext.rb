@@ -5,7 +5,7 @@ module ActiveRecord::Turntable
 
     eager_autoload do
       autoload :AbstractAdapter
-      # autoload :ConnectionHandlerExtension
+      autoload :ConnectionHandlerExtension
       autoload :LogSubscriber
       # autoload :Persistence
       # autoload :SchemaDumper
@@ -26,7 +26,7 @@ module ActiveRecord::Turntable
       # ActiveRecord::Persistence.include(Persistence)
       # ActiveRecord::Locking::Optimistic.include(LockingOptimistic)
       # ActiveRecord::Migration.include(ActiveRecord::Turntable::Migration)
-      # ActiveRecord::ConnectionAdapters::ConnectionHandler.prepend(ConnectionHandlerExtension)
+      ActiveRecord::ConnectionAdapters::ConnectionHandler.prepend(ConnectionHandlerExtension)
       ActiveRecord::Associations::Preloader::Association.prepend(AssociationPreloader)
       # ActiveRecord::Associations::Association.prepend(Association)
       # ActiveRecord::QueryCache.prepend(QueryCache)
